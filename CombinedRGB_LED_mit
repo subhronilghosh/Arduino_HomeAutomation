@@ -32,8 +32,6 @@ void loop() {
     }
     else
     {
-      mainString = Serial.readString();
-
       int Incoming_value = mainString.toInt();
       
       Serial.print(Incoming_value);
