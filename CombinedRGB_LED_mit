@@ -1,0 +1,49 @@
+String mainString;
+byte redLed = 8;
+byte greenLed = 7; 
+byte blueLed = 10;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(13, OUTPUT);// for BLUE LED
+}
+
+void loop() {
+  if(Serial.available()>0)
+  {
+    mainString = Serial.readString();
+    if(mainString.length()>1)
+    {
+      mainString = Serial.readString();
+      byte firstCommaIndex = mainString.indexOf('.');
+      byte secondCommaIndex = mainString.indexOf('.', firstCommaIndex + 1);
+  
+      String red = mainString.substring(0, firstCommaIndex);
+      String green = mainString.substring(firstCommaIndex + 1, secondCommaIndex);
+      String blue = mainString.substring(secondCommaIndex + 1);
+  
+      int r = red.toInt();
+      int g = green.toInt();
+      int b = blue.toInt();
+  
+      analogWrite(redLed, 255-r);  //analogWrite(redLed, r)
+      analogWrite(greenLed, 255-g); //analogWrite(redLed, g)
+      analogWrite(blueLed, 255-b); //analogWrite(redLed, b)
+    }
+    else
+    {
+      mainString = Serial.readString();
+
+      int Incoming_value = mainString.toInt();
+      
+      Serial.print(Incoming_value);
+      Serial.print("\n");
+      if(Incoming_value == 1)
+        digitalWrite(13, HIGH);
+      else if(Incoming_value == 0)
+        digitalWrite(13, LOW);
+    }
+  }
+
+  
+}
