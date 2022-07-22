@@ -1,0 +1,30 @@
+#define pin1 2 // motor #1 +
+#define pw1 9 // motor #1 pwm
+
+void setup() {
+pinMode(pin1, OUTPUT);
+pinMode(pw1, OUTPUT);
+Serial.begin(9600);
+digitalWrite(pin1, LOW);
+analogWrite(pw1, 50);
+
+}
+
+void loop() {
+
+if (Serial.available() >= 2 )
+{
+unsigned int a = Serial.read();
+unsigned int b = Serial.read();
+unsigned int val = (b * 256) + a;
+if (val == 200) // motor #1 stop
+{
+digitalWrite(pin1, LOW);
+}
+
+else if (val >= 1000 && val <= 1255)
+{
+analogWrite (pw1, val – 1000);
+}
+}
+}
