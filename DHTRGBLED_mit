@@ -1,0 +1,75 @@
+
+#include "DHT.h"
+String mainString;
+byte redLed = 8;
+byte greenLed = 7; 
+byte blueLed = 10;
+
+#define DHTPIN 2 
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+void setup() {
+  Serial.begin(9600);
+    dht.begin();
+  pinMode(13, OUTPUT);// for BLUE LED
+}
+
+void loop() {
+  if(Serial.available()>0)
+  {
+    mainString = Serial.readString();
+    if(mainString.length()>1)
+    {
+      byte firstCommaIndex = mainString.indexOf('.');
+      byte secondCommaIndex = mainString.indexOf('.', firstCommaIndex + 1);
+  
+      String red = mainString.substring(0, firstCommaIndex);
+      String green = mainString.substring(firstCommaIndex + 1, secondCommaIndex);
+      String blue = mainString.substring(secondCommaIndex + 1);
+  
+      int r = red.toInt();
+      int g = green.toInt();
+      int b = blue.toInt();
+  
+      analogWrite(redLed, 255-r);  //analogWrite(redLed, r)
+      analogWrite(greenLed, 255-g); //analogWrite(redLed, g)
+      analogWrite(blueLed, 255-b); //analogWrite(redLed, b)
+    }
+    else
+    {
+      int Incoming_value = mainString.toInt();
+      
+      Serial.print(Incoming_value);
+      Serial.print("\n");
+      if(Incoming_value == 1)
+        digitalWrite(13, HIGH);
+      else if(Incoming_value == 0)
+        digitalWrite(13, LOW);
+    }
+      float h = dht.readHumidity();
+  // Read temperature as Celsius (the default)
+  float t = dht.readTemperature();
+  // Read temperature as Fahrenheit (isFahrenheit = true)
+  float f = dht.readTemperature(true);
+
+  // Check if any reads failed and exit early (to try again).
+  if (isnan(h) || isnan(t) || isnan(f)) {
+    Serial.println(F("Failed to read from DHT sensor!"));
+    return;
+  }
+
+  // Compute heat index in Fahrenheit (the default)
+  float hif = dht.computeHeatIndex(f, h);
+  // Compute heat index in Celsius (isFahreheit = false)
+  float hic = dht.computeHeatIndex(t, h, false);
+
+  Serial.print("Humidity: ");
+  Serial.print(h);
+  Serial.print("%t");
+  Serial.print("Temperature: ");
+  Serial.print(t);
+  Serial.print(" *C ");
+  }
+
+  
+}
